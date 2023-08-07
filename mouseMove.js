@@ -49,4 +49,9 @@ setTimeout(() => {
 
 setTimeout(() => {
     robot.typeString("Thanks for everyone at relative path for showing me how to use the terminal, I'm well on my way to being a dev ops node engineer.");
-}, 3500);
+}, 4500);
+
+
+
+
+

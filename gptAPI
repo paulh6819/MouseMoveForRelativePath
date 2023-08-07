@@ -1,0 +1,14 @@
+fetch('https://api.openai.com/v1/engines/davinci/completions', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Bearer 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',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        prompt: 'how do i drive from michigan to california? if i asked hunters thsomson  ',
+        max_tokens: 150
+    })
+})
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
