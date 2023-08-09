@@ -2,8 +2,21 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
+require('dotenv').config();
 const port = 4001;
+const openAiApi = require('openai');
+const { Configuration, OpenAIApi } = require('openai');
+const apiKEY = process.env.API_KEY;
 
+
+
+// const configuration = new Configuration({
+//     apiKey: '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' // Consider using environment variables instead
+// });
+
+// const openai = new OpenAIApi(configuration);
+
+// console.log(openai);
 // Middleware
 app.use(express.static(path.join(__dirname, '/')));
 app.use(bodyParser.json());
@@ -22,16 +35,20 @@ import('node-fetch').then(fetchedModule => {
     app.post("/ask-openai", (req, res) => {
         // Note: Never hard-code API keys in the code.
         // Consider using environment variables or some secure mechanism.
-        const apiKey = 'Bearer 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';
+        // const apiKey = 'Bearer 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';
+
+        const userQuestion = req.body.question;
+
+        const prompt = `${userQuestion}. Respond like you are Hunter S. Thombson who had way to much coffee`
 
         fetch('https://api.openai.com/v1/engines/davinci/completions', {
             method: 'POST',
             headers: {
-                'Authorization': apiKey,
+                'Authorization': `Bearer ${apiKEY}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                prompt: 'How do I drive from michigan to california? Respond like you are Hunter S. Thombson who had way to much coffee',
+                prompt: prompt,
                 max_tokens: 150
             })
         })
@@ -46,6 +63,55 @@ import('node-fetch').then(fetchedModule => {
             });
     });
 
+
+    // app.get("/generate-image", (req, res) => {
+
+    //     openai.Image.create({
+    //         prompt: "Hunter S. Thompson in the style of Ralph Steadman",
+    //         n: 1,
+    //         size: "512x512"
+    //     }).then(response => {
+    //         const imageUrl = response.data[0].url;
+    //         res.json({ imageUrl });
+    //     }).catch(error => {
+    //         console.error('Error:', error);
+    //         res.status(500).send('Error occurred while generating image.');
+    //     });
+    // });
+
+    app.get("/generate-image", async (req, res) => {
+        try {
+            const prompt = "Hunter S. Thompson in the style of Ralph Steadman";
+
+            const response = await fetch('https://api.openai.com/v1/images/generations', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    n: 1,
+                    size: "512x512"
+                })
+            });
+
+
+
+            const data = await response.json();
+            console.log('RESPONSE DATA IS:', data);
+
+            const imageUrl = data.data && data.data[0] && data.data[0].url || "No image URL found!!!!!";
+
+            res.json({ imageUrl });
+
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).send('Error occurred while generating image.');
+        }
+    });
+
+
     app.listen(port, () => {
         console.log(`server running at localhost:${port}`);
     });
@@ -53,7 +119,6 @@ import('node-fetch').then(fetchedModule => {
 }).catch(error => {
     console.error("Failed to load node-fetch:", error);
 });
-
 
 
 

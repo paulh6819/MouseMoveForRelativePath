@@ -25,3 +25,21 @@ function submitQuestion() {
             console.error('Error:', error);
         });
 }
+
+
+
+window.onload = function () {
+    fetch('/generate-image')
+        .then(response => response.json())
+        .then(data => {
+            const imageUrl = data.imageUrl;
+            const imgElement = document.createElement('img');
+            imgElement.src = imageUrl;
+            imgElement.alt = "Generated Image";
+            document.body.appendChild(imgElement);
+        })
+        .catch(error => {
+            console.error('Error fetching the image:', error);
+        });
+}
+
