@@ -10,9 +10,6 @@ const apiKEY = process.env.API_KEY;
 
 
 
-// const configuration = new Configuration({
-//     apiKey: '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' // Consider using environment variables instead
-// });
 
 // const openai = new OpenAIApi(configuration);
 
