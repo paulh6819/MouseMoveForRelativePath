@@ -10,6 +10,30 @@ const apiKEY = process.env.API_KEY;
 
 
 
+const configuration = new Configuration({
+    apiKey: process.env.API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
+
+
+// (async function testGPT35() {
+//     try {
+//         const chatCompletion = await openai.createChatCompletion({
+//             model: "gpt-3.5-turbo",
+//             messages: [{ role: "user", content: "What might Hunter S thombson say if he were asked - wanna ride some motorccyles?" }],
+//         });
+
+//         console.log("GPT-3.5 Turbo Response:", chatCompletion.data.choices[0].message.content);
+//     } catch (error) {
+//         console.error('Error with GPT-3.5 Turbo:', error);
+//     }
+// })();
+
+
+
+
+
 
 // const openai = new OpenAIApi(configuration);
 
@@ -29,36 +53,36 @@ import('node-fetch').then(fetchedModule => {
     //     res.send("<h1>Hello world </h1>")
     // });
 
-    app.post("/ask-openai", (req, res) => {
-        // Note: Never hard-code API keys in the code.
-        // Consider using environment variables or some secure mechanism.
-        // const apiKey = 'Bearer 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';
+    // app.post("/ask-openai", (req, res) => {
+    //     // Note: Never hard-code API keys in the code.
+    //     // Consider using environment variables or some secure mechanism.
+    //     // const apiKey = 'Bearer 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';
 
-        const userQuestion = req.body.question;
+    //     const userQuestion = req.body.question;
 
-        const prompt = `${userQuestion}. Respond like you are Hunter S. Thombson who had way to much coffee`
+    //     const prompt = `${userQuestion}. Respond like you are Hunter S. Thombson who had way to much coffee`
 
-        fetch('https://api.openai.com/v1/engines/davinci/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                prompt: prompt,
-                max_tokens: 150
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                const text = data.choices && data.choices[0] && data.choices[0].text || "No data found!";
-                res.json({ answer: text });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                res.status(500).send('Error occurred.');
-            });
-    });
+    //     fetch('https://api.openai.com/v1/engines/davinci/completions', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Authorization': `Bearer ${apiKEY}`,
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             prompt: prompt,
+    //             max_tokens: 150
+    //         })
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const text = data.choices && data.choices[0] && data.choices[0].text || "No data found!";
+    //             res.json({ answer: text });
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             res.status(500).send('Error occurred.');
+    //         });
+    // });
 
 
     // app.get("/generate-image", (req, res) => {
@@ -75,6 +99,31 @@ import('node-fetch').then(fetchedModule => {
     //         res.status(500).send('Error occurred while generating image.');
     //     });
     // });
+
+
+    app.post("/ask-openai", async (req, res) => {
+        try {
+            const userQuestion = req.body.question;
+
+            const chatCompletion = await openai.createChatCompletion({
+                model: "gpt-3.5-turbo",
+                messages: [
+                    { role: "system", content: "You are a helpful assistant." },
+                    { role: "user", content: `${userQuestion}. Respond like you are Hunter S. Thompson who had way too much coffee` }
+                ]
+            });
+
+            const text = chatCompletion.data.choices[0].message.content || "No data found!";
+            res.json({ answer: text });
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).send('Error occurred.');
+        }
+    });
+
+
+
+
 
     app.get("/generate-image", async (req, res) => {
         try {
@@ -116,6 +165,25 @@ import('node-fetch').then(fetchedModule => {
 }).catch(error => {
     console.error("Failed to load node-fetch:", error);
 });
+
+
+
+
+// var http = require('http');
+
+// http.createServer((req, res) => {
+//     var headers = {
+//         'Content-type': 'text/plain'
+//     };
+
+//     res.writeHead(200, headers);
+
+//     var responseContent = "Headers;\n" + JSON.stringify(headers, null, 4) + "\n\Hello World!";
+
+//     res.end(responseContent);
+// }).listen(8080);
+
+
 
 
 
